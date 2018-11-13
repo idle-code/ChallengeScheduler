@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 django = "*"
+pre-commit = "*"
+pylint = "*"
+prospector = "*"
 
 [dev-packages]
 
