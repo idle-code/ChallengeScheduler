@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Challenge Scheduler v0.1</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</head>
+<body>
+    {% if not user.is_authenticated %}
+    <div id="login">
+        <form class="form-horizontal" name="LoginForm" action="/login/" method="post">
+            {% csrf_token %}
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}"/>
+            {% endif %}
+            <div class="control-group">
+                <label class="control-label" for="username">Username</label>
+                <div class="controls">
+                    <input type="text" id="username" name="username" placeholder="Username" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="username">Password</label>
+                <div class="controls">
+                    <input type="password" id="password" name="password" placeholder="Password" />
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button type="submit" class="btn">Login</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    {% elif not user.is_active %}
+    <div>
+        <p>Hello {{ user }}, {{ user.is_authenticated }}, your account is inactive</p>
+    </div>
+    {% else %}
+    <div>
+        <p>Hello {{ user.username }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
