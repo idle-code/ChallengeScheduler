@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpRequest
+from django.urls import reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
 
@@ -33,9 +34,9 @@ class LoginView(TemplateView):
 
 
 class LogoutView(RedirectView):
-    url = "/"
+    url = reverse_lazy("home")
 
     def get(self, request: HttpRequest, *args, **kwargs):
-        print("fLogging out {request.user}")
+        print(f"Logging out {request.user}")
         logout(request)
         return super().get(request, *args, **kwargs)
