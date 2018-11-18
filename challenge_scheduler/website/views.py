@@ -5,6 +5,10 @@ from django.http import HttpRequest
 from django.views.generic import RedirectView, TemplateView
 
 
+class DummyView(TemplateView):
+    template_name = "website/home.html"
+
+
 class HomeView(TemplateView, LoginRequiredMixin):
     template_name = "website/home.html"
     login_url = "/login/"
