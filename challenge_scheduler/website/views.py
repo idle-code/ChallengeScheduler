@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpRequest
-from django.urls import reverse_lazy
+from django.db import IntegrityError
+from django.http import HttpRequest, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import RedirectView, TemplateView
 
 
@@ -40,3 +41,28 @@ class LogoutView(RedirectView):
         print(f"Logging out {request.user}")
         logout(request)
         return super().get(request, *args, **kwargs)
+
+
+class RegisterView(TemplateView):
+    template_name = "website/register.html"
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+
+        # TODO: actually validate following variables:
+        username = request.POST["username"]
+        if not username:
+            return self.render_to_response({"error_message": "No username provided"})
+        email = request.POST["email"]
+        if not email:
+            return self.render_to_response({"error_message": "No email provided"})
+        password = request.POST["password"]
+        if not password:
+            return self.render_to_response({"error_message": "No password provided"})
+
+        try:
+            new_user = User.objects.create_user(username, email, password)
+            login(request, new_user)
+            return HttpResponseRedirect(reverse("home"))
+        except IntegrityError as err:
+            return self.render_to_response({"error_message": str(err)})
