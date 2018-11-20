@@ -27,11 +27,11 @@
         </form>
     </div>
     {% elif not user.is_active %}
-    <div>
-        <p>Hello {{ user }}, {{ user.is_authenticated }}, your account is inactive</p>
+    <div class="alert alert-warning" role="alert">
+        <p>Hello {{ user }}, your account is inactive</p>
     </div>
     {% else %}
-    <div>
+    <div class="alert alert-success" role="alert">
         <p>Hello {{ user.username }}</p>
     </div>
     {% endif %}
