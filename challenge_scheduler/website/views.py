@@ -66,3 +66,13 @@ class RegisterView(TemplateView):
             return HttpResponseRedirect(reverse("home"))
         except IntegrityError as err:
             return self.render_to_response({"error_message": str(err)})
+
+
+class ChallengeNew(TemplateView):
+    template_name = "website/challenge-new.html"
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        del request
+        del args, kwargs
+
+        return self.render_to_response({})

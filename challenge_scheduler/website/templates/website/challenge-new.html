@@ -1,0 +1,21 @@
+{% extends "website/base.html" %}
+{% block main %}
+<div>
+    <h1>Create new challenge</h1>
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        <p>{{ error_message }}</p>
+    </div>
+    {% endif %}
+    <form action="{% url 'challenge-new' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="input_username">User name</label>
+            <input name="username" type="text" class="form-control" id="input_username" placeholder="User name">
+        </div>
+
+        <!--TODO: Add cancel button-->
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
+{% endblock main %}

@@ -19,6 +19,7 @@ repos:
     hooks:
       - id: isort
         args:
+          - --line-width=100
           - --multi-line=3
           - --keep-direct-and-as
   - repo: https://github.com/ambv/black
