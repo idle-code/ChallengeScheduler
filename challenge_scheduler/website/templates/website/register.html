@@ -1,27 +1,4 @@
 {% extends "website/base.html" %}
 {% block main %}
-<div>
-    <h1>Account creation</h1>
-    {% if error_message %}
-    <div class="alert alert-danger" role="alert">
-        <p>{{ error_message }}</p>
-    </div>
-    {% endif %}
-    <form action="{% url 'account-register' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="input_username">User name</label>
-            <input name="username" type="text" class="form-control" id="input_username" placeholder="User name">
-        </div>
-        <div class="form-group">
-            <label for="input_email">Email address</label>
-            <input name="email" type="email" class="form-control" id="input_email" aria-describedby="emailHelp" placeholder="Enter email">
-        </div>
-        <div class="form-group">
-            <label for="input_password">Password</label>
-            <input name="password" type="password" class="form-control" id="input_password" placeholder="Password">
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-</div>
+    {% include 'website/form_template.html' with form=form form_title='Account creation' form_action='Register' target_url='account-register' %}
 {% endblock main %}

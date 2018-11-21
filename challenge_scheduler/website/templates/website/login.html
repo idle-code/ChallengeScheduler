@@ -1,31 +1,7 @@
 {% extends "website/base.html" %}
 {% block main %}
     {% if not user.is_authenticated %}
-    <div id="login">
-        <form class="form-horizontal" name="LoginForm" action="{% url 'account-login' %}" method="post">
-            {% csrf_token %}
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}"/>
-            {% endif %}
-            <div class="control-group">
-                <label class="control-label" for="username">Username</label>
-                <div class="controls">
-                    <input type="text" id="username" name="username" placeholder="Username" />
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="username">Password</label>
-                <div class="controls">
-                    <input type="password" id="password" name="password" placeholder="Password" />
-                </div>
-            </div>
-            <div class="control-group">
-                <div class="controls">
-                    <button type="submit" class="btn">Login</button>
-                </div>
-            </div>
-        </form>
-    </div>
+        {% include 'website/form_template.html' with form=form form_title='Login' form_action='Login' target_url='account-login' %}
     {% elif not user.is_active %}
     <div class="alert alert-warning" role="alert">
         <p>Hello {{ user }}, your account is inactive</p>

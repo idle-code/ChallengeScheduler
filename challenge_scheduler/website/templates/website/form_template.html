@@ -1,0 +1,38 @@
+<div>
+    <h1>{{ form_title }}</h1>
+    <form action="{% url target_url %}" method="post">
+        {% csrf_token %}
+        <fieldset>
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="control-group error">
+                    <label class="control-label">{{ field.label }}</label>
+                    <div class="controls">
+                        {{ field }}
+                        <div class="alert alert-danger" role="alert">
+                            {% for error in  field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="control-group error">
+                    <label class="control-label">{{ field.label }}</label>
+                    <div class="controls">
+                        {{ field }}
+                        {% if field.help_text %}
+                            <p class="help-inline">
+                                <small>{{ field.help_text }}</small>
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+        </fieldset>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{form_action}}</button>
+        </div>
+    </form>
+</div>
