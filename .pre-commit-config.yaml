@@ -14,14 +14,10 @@ repos:
       - id: pyupgrade
         args:
           - --py36-plus
-  - repo: https://github.com/doublify/pre-commit-isort
-    rev: master
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v1.3.4
     hooks:
-      - id: isort
-        args:
-          - --line-width=100
-          - --multi-line=3
-          - --keep-direct-and-as
+      - id: reorder-python-imports
   - repo: https://github.com/ambv/black
     rev: master
     hooks:
@@ -36,6 +32,7 @@ repos:
         entry: python -m prospector.__main__
         language: system
         types: [python]
+        exclude: '\/migrations\/'
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: master
     hooks:

@@ -1,11 +1,19 @@
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import HttpRequest, HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import RedirectView, TemplateView
+from django.http import HttpRequest
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views.generic import RedirectView
+from django.views.generic import TemplateView
 
-from .forms import LoginForm, RegisterForm
+from .forms import ChallengeForm
+from .forms import LoginForm
+from .forms import RegisterForm
+from .models import Challenge
 
 
 class DummyView(TemplateView):
@@ -73,8 +81,25 @@ class RegisterView(TemplateView):
 class ChallengeNew(TemplateView):
     template_name = "website/challenge-new.html"
 
-    def post(self, request: HttpRequest, *args, **kwargs):
-        del request
+    def get(self, request: HttpRequest, *args, **kwargs):
         del args, kwargs
+        empty_form = ChallengeForm()
+        return self.render_to_response({"form": empty_form})
 
-        return self.render_to_response({})
+    def post(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+        form = ChallengeForm(request.POST)
+        if form.is_valid():
+            new_challenge = form.save(commit=False)
+            new_challenge.owner = request.user
+            new_challenge.save()
+        return self.render_to_response({"form": form})
+
+
+class ChallengeList(TemplateView):
+    template_name = "website/challenge-list.html"
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+        challenges = Challenge.objects.all()
+        return self.render_to_response({"challenges": challenges})

@@ -1,0 +1,11 @@
+{% extends "website/base.html" %}
+{% block main %}
+<div>
+    <h1>Challenges</h1>
+    <ul>
+    {% for challenge in challenges %}
+        <li><a href="#"> {{ challenge.name }} </a></li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock main %}
