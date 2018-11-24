@@ -1,0 +1,4 @@
+{% extends "website/base.html" %}
+{% block main %}
+    {% include 'website/form_template.html' with form=form form_title='Account settings' form_action='Save' target_url='account-settings' %}
+{% endblock main %}

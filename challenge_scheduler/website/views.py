@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpRequest
@@ -10,6 +11,7 @@ from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 from django.views.generic import TemplateView
 
+from .forms import AccountSettingsForm
 from .forms import ChallengeForm
 from .forms import LoginForm
 from .forms import RegisterForm
@@ -82,6 +84,28 @@ class RegisterView(TemplateView):
             form.save()
             login(request, new_user)
             return HttpResponseRedirect(reverse("home"))
+        return self.render_to_response({"form": form})
+
+
+class AccountSettingsView(TemplateView):
+    template_name = "website/account-settings.html"
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+        logged_user = request.user
+        form = AccountSettingsForm(instance=logged_user)
+        return self.render_to_response({"form": form})
+
+    def post(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+        logged_user = request.user
+        form = AccountSettingsForm(request.POST, instance=logged_user)
+        if form.is_valid():
+            user = form.save(commit=False)
+            if form.cleaned_data["password"]:
+                user.set_password(form.cleaned_data["password"])
+                update_session_auth_hash(request, user)
+            form.save()
         return self.render_to_response({"form": form})
 
 
