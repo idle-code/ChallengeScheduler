@@ -9,6 +9,7 @@ from django.db.models import TextField
 
 class Challenge(models.Model):
     name = CharField(max_length=100)
+    symbol = CharField(max_length=6, blank=True)
     description = TextField()
     start = DateField()
     deadline = DateField()

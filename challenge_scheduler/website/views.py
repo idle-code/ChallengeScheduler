@@ -42,11 +42,16 @@ class LoginView(TemplateView):
         del args, kwargs
 
         form = LoginForm(request.POST)
+
         if form.is_valid():
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password"]
             user: User = authenticate(username=username, password=password)
-            if user is not None and user.is_active:
+            if user is None:
+                form.add_error("username", "Invalid user name or password")
+            elif not user.is_active:
+                form.add_error("username", "Your user account is inactive")
+            else:
                 login(request, user)
         return self.render_to_response({"form": form})
 
@@ -72,7 +77,9 @@ class RegisterView(TemplateView):
         del args, kwargs
         form = RegisterForm(request.POST)
         if form.is_valid():
-            new_user = form.save()
+            new_user = form.save(commit=False)
+            new_user.set_password(new_user.password)
+            form.save()
             login(request, new_user)
             return HttpResponseRedirect(reverse("home"))
         return self.render_to_response({"form": form})
@@ -91,6 +98,9 @@ class ChallengeNew(TemplateView):
         form = ChallengeForm(request.POST)
         if form.is_valid():
             new_challenge = form.save(commit=False)
+            if not new_challenge.symbol:
+                # Use first name character as symbol
+                new_challenge.symbol = new_challenge.trim().name[0].toupper()
             new_challenge.owner = request.user
             new_challenge.save()
         return self.render_to_response({"form": form})
