@@ -5,6 +5,8 @@
     <ul>
     {% for challenge in challenges %}
         <li><a href="#"> {{ challenge.name }} </a></li>
+    {% empty %}
+        <li>You have no challenges</li>
     {% endfor %}
     </ul>
 </div>

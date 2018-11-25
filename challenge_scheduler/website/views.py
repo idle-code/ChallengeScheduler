@@ -124,7 +124,7 @@ class ChallengeNew(TemplateView):
             new_challenge = form.save(commit=False)
             if not new_challenge.symbol:
                 # Use first name character as symbol
-                new_challenge.symbol = new_challenge.trim().name[0].toupper()
+                new_challenge.symbol = new_challenge.name.strip()[0].upper()
             new_challenge.owner = request.user
             new_challenge.save()
         return self.render_to_response({"form": form})
