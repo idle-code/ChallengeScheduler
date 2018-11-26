@@ -33,7 +33,3 @@ repos:
         language: system
         types: [python]
         exclude: '\/migrations\/'
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: master
-    hooks:
-      - id: mypy

@@ -3,6 +3,7 @@ from django.urls import path
 from .views import AccountSettingsView
 from .views import ChallengeList
 from .views import ChallengeNew
+from .views import ChallengeReadOnly
 from .views import HomeView
 from .views import LoginView
 from .views import LogoutView
@@ -15,5 +16,6 @@ urlpatterns = [
     path("account/register/", RegisterView.as_view(), name="account-register"),
     path("account/", AccountSettingsView.as_view(), name="account-settings"),
     path("challenges/", ChallengeList.as_view(), name="challenge-list"),
-    path("challenge/new", ChallengeNew.as_view(), name="challenge-new"),
+    path("challenge/new/", ChallengeNew.as_view(), name="challenge-full-edit"),
+    path("challenge/<int:challenge_id>/", ChallengeReadOnly.as_view(), name="challenge-read-only"),
 ]

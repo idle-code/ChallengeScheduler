@@ -1,0 +1,38 @@
+{% extends "website/base.html" %}
+{% block main %}
+<div>
+    <h1>{{ challenge.name }} ({{ challenge.symbol }})</h1>
+
+    <h2>Description</h2>
+    <p>{{ challenge.description }}</p>
+
+    <p>From {{ challenge.start }} to {{ challenge.deadline }}.</p>
+
+    {% if challenge.todo %}
+    <h2>TODO</h2>
+    <p>{{ challenge.todo }}</p>
+    {% endif %}
+
+    <h2>Milestones</h2>
+    <ul>
+    {% for milestone in challenge.milestones %}
+        <li>{{ milestone.name }}</li>
+    {% empty %}
+        <li>No milestones</li>
+    {% endfor %}
+    </ul>
+
+    <h2>Progress</h2>
+    <ul>
+    {% for date, entry in challenge.all_progress_entries.items %}
+        {% if entry %}
+        <li>{{ date }}: {{ progress_entry.name }}</li>
+        {% else %}
+        <li>{{ date }}: ----</li>
+        {% endif %}
+    {% endfor %}
+    </ul>
+
+    <p>Created on {{ challenge.created }} by {{ challenge.owner }}</p>
+</div>
+{% endblock main %}

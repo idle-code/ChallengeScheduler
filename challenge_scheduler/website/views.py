@@ -110,7 +110,7 @@ class AccountSettingsView(TemplateView):
 
 
 class ChallengeNew(TemplateView):
-    template_name = "website/challenge-new.html"
+    template_name = "website/challenge-full-edit.html"
 
     def get(self, request: HttpRequest, *args, **kwargs):
         del args, kwargs
@@ -128,6 +128,23 @@ class ChallengeNew(TemplateView):
             new_challenge.owner = request.user
             new_challenge.save()
         return self.render_to_response({"form": form})
+
+
+class ChallengeDetail(TemplateView):
+    template_name = "website/challenge-active.html"
+
+    def get(self, request: HttpRequest, *args, **kwargs):
+        del args, kwargs
+        return self.render_to_response({"challenge": None})
+
+
+class ChallengeReadOnly(TemplateView):
+    template_name = "website/challenge-read-only.html"
+
+    def get(self, request: HttpRequest, challenge_id: int, *args, **kwargs):
+        del args, kwargs
+        challenge = Challenge.objects.get(pk=challenge_id)
+        return self.render_to_response({"challenge": challenge})
 
 
 class ChallengeList(TemplateView):

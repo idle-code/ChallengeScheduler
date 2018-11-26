@@ -1,7 +1,8 @@
 {% extends "website/base.html" %}
 {% block main %}
 <div>
-    <h1>New challenge</h1>
+    <h1>{{ challenge.name }}</h1>
+
     <form action="{% url 'challenge-new' %}" method="post">
         {% csrf_token %}
         {% include 'website/form_fieldset_template.html' with form=form %}
