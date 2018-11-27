@@ -109,17 +109,27 @@ class AccountSettingsView(TemplateView):
         return self.render_to_response({"form": form})
 
 
-class ChallengeNew(TemplateView):
+class ChallengeEdit(TemplateView):
     template_name = "website/challenge-full-edit.html"
 
-    def get(self, request: HttpRequest, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, challenge_id=None, **kwargs):
         del args, kwargs
-        empty_form = ChallengeForm()
-        return self.render_to_response({"form": empty_form})
+        if challenge_id:
+            challenge = Challenge.objects.get(pk=challenge_id)
+            form = ChallengeForm(instance=challenge)
+        else:
+            form = ChallengeForm()
+        return self.render_to_response({"form": form})
 
-    def post(self, request: HttpRequest, *args, **kwargs):
+    def post(self, request: HttpRequest, *args, challenge_id=None, **kwargs):
         del args, kwargs
-        form = ChallengeForm(request.POST)
+
+        if challenge_id:
+            challenge = Challenge.objects.get(pk=challenge_id)
+            form = ChallengeForm(request.POST, instance=challenge)
+        else:
+            form = ChallengeForm(request.POST)
+
         if form.is_valid():
             new_challenge = form.save(commit=False)
             if not new_challenge.symbol:
@@ -130,16 +140,17 @@ class ChallengeNew(TemplateView):
         return self.render_to_response({"form": form})
 
 
-class ChallengeDetail(TemplateView):
-    template_name = "website/challenge-active.html"
-
-    def get(self, request: HttpRequest, *args, **kwargs):
-        del args, kwargs
-        return self.render_to_response({"challenge": None})
-
-
 class ChallengeReadOnly(TemplateView):
     template_name = "website/challenge-read-only.html"
+
+    def get(self, request: HttpRequest, challenge_id: int, *args, **kwargs):
+        del args, kwargs
+        challenge = Challenge.objects.get(pk=challenge_id)
+        return self.render_to_response({"challenge": challenge})
+
+
+class ChallengeActive(TemplateView):
+    template_name = "website/challenge-active.html"
 
     def get(self, request: HttpRequest, challenge_id: int, *args, **kwargs):
         del args, kwargs
@@ -154,3 +165,12 @@ class ChallengeList(TemplateView):
         del args, kwargs
         challenges = Challenge.objects.all()
         return self.render_to_response({"challenges": challenges})
+
+
+class ChallengeRemove(RedirectView):
+    url = reverse_lazy("challenge-list")
+
+    def get(self, request: HttpRequest, challenge_id: int, *args, **kwargs):
+        challenge = Challenge.objects.get(pk=challenge_id)
+        challenge.delete()
+        return super().get(request, *args, **kwargs)

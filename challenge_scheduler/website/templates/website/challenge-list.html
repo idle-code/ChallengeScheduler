@@ -4,7 +4,11 @@
     <h1>Challenges</h1>
     <ul>
     {% for challenge in challenges %}
-        <li><a href="{% url 'challenge-read-only' challenge.id %}"> {{ challenge.name }} </a></li>
+        {% if challenge.is_active %}
+            <li><a href="{% url 'challenge-active' challenge.id %}"> {{ challenge.name }} </a></li>
+        {% else %}
+            <li><a href="{% url 'challenge-read-only' challenge.id %}"> {{ challenge.name }} </a></li>
+        {% endif %}
     {% empty %}
         <li>You have no challenges</li>
     {% endfor %}

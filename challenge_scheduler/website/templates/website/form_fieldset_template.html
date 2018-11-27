@@ -1,29 +1,24 @@
 <fieldset>
 {% for field in form %}
-    {% if field.errors %}
-        <div class="control-group error">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">
-                {{ field }}
-                <div class="alert alert-danger" role="alert">
-                    {% for error in  field.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
+<div class="control-group error">
+    <label class="control-label">{{ field.label }}</label>
+    <div class="controls">
+        {{ field }}
+
+        {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for error in field.errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
         </div>
-    {% else %}
-        <div class="control-group error">
-            <label class="control-label">{{ field.label }}</label>
-            <div class="controls">
-                {{ field }}
-                {% if field.help_text %}
-                    <p class="help-inline">
-                        <small>{{ field.help_text }}</small>
-                    </p>
-                {% endif %}
-            </div>
-        </div>
-    {% endif %}
+        {% endif %}
+
+        {% if field.help_text %}
+        <p class="help-inline">
+            <small>{{ field.help_text }}</small>
+        </p>
+        {% endif %}
+    </div>
+</div>
 {% endfor %}
 </fieldset>

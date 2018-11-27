@@ -1,14 +1,46 @@
 {% extends "website/base.html" %}
 {% block main %}
 <div>
-    <h1>{{ challenge.name }}</h1>
-
-    <form action="{% url 'challenge-new' %}" method="post">
+    <form action="{% url 'challenge-active' challenge.id %}" method="post">
         {% csrf_token %}
-        {% include 'website/form_fieldset_template.html' with form=form %}
+
+        <h1>{{ challenge.name }} ({{ challenge.symbol }})</h1>
+
+        <h2>Description</h2>
+        <p>{{ challenge.description }}</p>
+
+        <p>From {{ challenge.start }} to {{ challenge.deadline }}.</p>
+
+        {% if challenge.todo %}
+        <h2>TODO</h2>
+        <p>{{ challenge.todo }}</p>
+        {% endif %}
+
+        <h2>Milestones</h2>
+        <ul>
+        {% for milestone in challenge.milestones %}
+            <li>{{ milestone.name }}</li>
+        {% empty %}
+            <li>No milestones</li>
+        {% endfor %}
+        </ul>
+
+        <h2>Progress</h2>
+        <ul>
+        {% for date, entry in challenge.all_progress_entries.items %}
+            {% if entry %}
+            <li>{{ date }}: {{ progress_entry.name }}</li>
+            {% else %}
+            <li>{{ date }}: ----</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Save</button>
         </div>
+        <a href="{% url 'challenge-edit' challenge.id %}" class="btn btn-info" role="button">Edit</a>
+        <a href="{% url 'challenge-remove' challenge.id %}" class="btn btn-info" role="button">Remove</a>
     </form>
 </div>
 {% endblock main %}
