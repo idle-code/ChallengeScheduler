@@ -1,29 +1,75 @@
 {% extends "website/base.html" %}
 {% block main %}
+{% with challenge_form.instance as challenge %}
 <div>
-    <form action="." method="post">
+    <form method="post">
         {% csrf_token %}
-
         <h1>{{ challenge.name }} ({{ challenge.symbol }})</h1>
+
+        {% if challenge.is_active %}
+        <h2>Is active</h2>
+        {% endif %}
+
 
         <h2>Description</h2>
         <p>{{ challenge.description }}</p>
 
         <p>From {{ challenge.start }} to {{ challenge.deadline }}.</p>
 
-        {% if challenge.todo %}
         <h2>TODO</h2>
-        <p>{{ challenge.todo }}</p>
-        {% endif %}
+        <fieldset id="challenge-fieldset">
+            {% with challenge_form.todo as field %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="controls">
+
+                    {{ field }}
+
+                    {% if field.errors %}
+                    <div class="error alert alert-danger" role="alert">
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if field.help_text %}
+                    <p class="help-inline">
+                        <small>{{ field.help_text }}</small>
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endwith field %}
+        </fieldset>
 
         <h2>Milestones</h2>
-        <ul>
-        {% for milestone in challenge.milestones %}
-            <li>{{ milestone.name }}</li>
-        {% empty %}
-            <li>No milestones</li>
-        {% endfor %}
-        </ul>
+
+        <fieldset id="milestones-fieldset">
+            {{ milestones_formset.management_form }}
+            <ul>
+            {% for form in milestones_formset %}
+                {% with form.instance as milestone %}
+                <li>
+                    {{ milestone.name }}
+
+                    {% if milestone.deadline %}
+                        ({{ milestone.deadline }})
+                    {% endif %}
+
+                    {{ form.id }}
+                    {% if not milestone.fulfilled %}
+                        {{ form.fulfilled }}
+                    {% else %}
+                        <input checked disabled type="checkbox" class="form-control">
+                        <span>Fulfilled on {{ milestone.fulfilled_on }}</span>
+                    {% endif %}
+                </li>
+                {% endwith milestone %}
+
+            {% endfor %}
+            </ul>
+        </fieldset>
 
         <h2>Progress</h2>
         <ul>
@@ -36,11 +82,24 @@
         {% endfor %}
         </ul>
 
+        <h2>Progress entries:</h2>
+        <fieldset id="progress-fieldset">
+
+        </fieldset>
+
         <div class="form-actions">
+        <div class="btn-group">
             <button type="submit" class="btn btn-primary">Save</button>
+
+            <a href="{% url 'challenge-edit' challenge.id %}" class="btn btn-secondary active">
+                <i class="glyphicon glyphicon-edit" aria-hidden="true"></i> Edit
+            </a>
         </div>
-        <a href="{% url 'challenge-edit' challenge.id %}" class="btn btn-info" role="button">Edit</a>
-        <a href="{% url 'challenge-remove' challenge.id %}" class="btn btn-info" role="button">Remove</a>
+
+        </div>
+
+        <p>Created on {{ challenge.created }} by {{ challenge.owner }}</p>
     </form>
 </div>
+{% endwith challenge %}
 {% endblock main %}

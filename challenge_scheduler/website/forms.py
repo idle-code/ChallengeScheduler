@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.forms import BooleanField
 from django.forms import CharField
 from django.forms import DateField
 from django.forms import EmailField
@@ -64,7 +65,18 @@ class MilestoneEditForm(ModelForm, BootstrapForm):
         fields = ["name", "deadline"]
 
 
-MilestoneEditFormset = modelformset_factory(Milestone, MilestoneEditForm, extra=1, can_delete=True)
+MilestoneEditFormSet = modelformset_factory(Milestone, MilestoneEditForm, extra=1, can_delete=True)
+
+
+class MilestoneActiveForm(ModelForm, BootstrapForm):
+    fulfilled = BooleanField(required=False)
+
+    class Meta:
+        model = Milestone
+        fields = ["fulfilled"]
+
+
+MilestoneActiveFormSet = modelformset_factory(Milestone, MilestoneActiveForm, extra=0)
 
 
 class ChallengeEditForm(ModelForm, BootstrapForm):

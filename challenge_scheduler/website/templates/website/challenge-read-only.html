@@ -20,8 +20,8 @@
 
     <h2>Milestones</h2>
     <ul>
-    {% for milestone in challenge.milestones %}
-        <li>{{ milestone.name }}</li>
+    {% for milestone in challenge.milestones.all %}
+        <li>{{ milestone.name }}</li>3
     {% empty %}
         <li>No milestones</li>
     {% endfor %}
