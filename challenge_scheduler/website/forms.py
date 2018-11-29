@@ -5,10 +5,12 @@ from django.forms import DateField
 from django.forms import EmailField
 from django.forms import Form
 from django.forms import ModelForm
+from django.forms import modelformset_factory
 from django.forms import PasswordInput
 from django.forms import TextInput
 
 from .models import Challenge
+from .models import Milestone
 
 
 class BootstrapForm(Form):
@@ -52,13 +54,36 @@ class AccountSettingsForm(ModelForm, BootstrapForm):
         fields = ["email", "password", "password_retype"]
 
 
-class ChallengeForm(ModelForm, BootstrapForm):
+class MilestoneEditForm(ModelForm, BootstrapForm):
+    deadline = DateField(
+        widget=TextInput(attrs={"data-provide": "datepicker", "class": "datainput"}), required=False
+    )
+
+    class Meta:
+        model = Milestone
+        fields = ["name", "deadline"]
+
+
+MilestoneEditFormset = modelformset_factory(Milestone, MilestoneEditForm, extra=1, can_delete=True)
+
+
+class ChallengeEditForm(ModelForm, BootstrapForm):
     # TODO: user datepicker in data range mode
     start = DateField(widget=TextInput(attrs={"data-provide": "datepicker", "class": "datainput"}))
     deadline = DateField(
         widget=TextInput(attrs={"data-provide": "datepicker", "class": "datainput"})
     )
 
+    # milestones = None
+
     class Meta:
         model = Challenge
-        fields = ["name", "symbol", "description", "start", "deadline", "todo"]
+        fields = ["name", "symbol", "description", "start", "deadline"]
+
+
+class ChallengeActiveForm(ModelForm, BootstrapForm):
+    progress_entries = None
+
+    class Meta:
+        model = Challenge
+        fields = ["todo"]

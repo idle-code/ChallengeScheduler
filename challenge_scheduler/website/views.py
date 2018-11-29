@@ -12,8 +12,9 @@ from django.views.generic import RedirectView
 from django.views.generic import TemplateView
 
 from .forms import AccountSettingsForm
-from .forms import ChallengeForm
+from .forms import ChallengeEditForm
 from .forms import LoginForm
+from .forms import MilestoneEditFormset
 from .forms import RegisterForm
 from .models import Challenge
 
@@ -116,28 +117,63 @@ class ChallengeEdit(TemplateView):
         del args, kwargs
         if challenge_id:
             challenge = Challenge.objects.get(pk=challenge_id)
-            form = ChallengeForm(instance=challenge)
+            challenge_form = ChallengeEditForm(instance=challenge)
+            milestones_formset = MilestoneEditFormset(
+                queryset=challenge.milestones.all(), prefix="milestone"
+            )
         else:
-            form = ChallengeForm()
-        return self.render_to_response({"challenge_form": form})
+            challenge_form = ChallengeEditForm()
+            milestones_formset = MilestoneEditFormset()
+        return self.render_to_response(
+            {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+        )
 
     def post(self, request: HttpRequest, *args, challenge_id=None, **kwargs):
         del args, kwargs
 
         if challenge_id:
             challenge = Challenge.objects.get(pk=challenge_id)
-            form = ChallengeForm(request.POST, instance=challenge)
+            challenge_form = ChallengeEditForm(request.POST, instance=challenge)
+            milestones_formset = MilestoneEditFormset(
+                request.POST, queryset=challenge.milestones.all(), prefix="milestone"
+            )
         else:
-            form = ChallengeForm(request.POST)
+            challenge_form = ChallengeEditForm(request.POST)
+            milestones_formset = MilestoneEditFormset(request.POST)
 
-        if form.is_valid():
-            new_challenge = form.save(commit=False)
-            if not new_challenge.symbol:
-                # Use first name character as symbol
-                new_challenge.symbol = new_challenge.name.strip()[0].upper()
-            new_challenge.owner = request.user
-            new_challenge.save()
-        return self.render_to_response({"challenge_form": form})
+        if not challenge_form.is_valid() or not milestones_formset.is_valid():
+            return self.render_to_response(
+                {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+            )
+
+        new_challenge = challenge_form.save(commit=False)
+        if not new_challenge.symbol:
+            # Use first name character as symbol
+            new_challenge.symbol = new_challenge.name.strip()[0].upper()
+        new_challenge.owner = request.user
+        new_challenge.save()
+
+        for deleted_milestone_form in milestones_formset.deleted_forms:
+            print(f"Deleting {deleted_milestone_form.instance}")
+            deleted_milestone_form.instance.delete()
+            milestones_formset.forms.remove(deleted_milestone_form)
+
+        for milestone_form in milestones_formset.forms:
+            if not milestone_form.cleaned_data.get("name"):
+                print(f"Skipping empty form: {milestone_form}")
+                continue
+            milestone = milestone_form.save(commit=False)
+            milestone.challenge = new_challenge
+            milestone.save()
+            print(f"New milestone created: {milestone}")
+
+        challenge_form = ChallengeEditForm(instance=new_challenge)
+        milestones_formset = MilestoneEditFormset(
+            queryset=new_challenge.milestones.all(), prefix="milestone"
+        )
+        return self.render_to_response(
+            {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+        )
 
 
 class ChallengeReadOnly(TemplateView):
