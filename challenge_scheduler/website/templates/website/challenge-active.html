@@ -1,7 +1,7 @@
 {% extends "website/base.html" %}
 {% block main %}
 <div>
-    <form action="{% url 'challenge-active' challenge.id %}" method="post">
+    <form action="." method="post">
         {% csrf_token %}
 
         <h1>{{ challenge.name }} ({{ challenge.symbol }})</h1>

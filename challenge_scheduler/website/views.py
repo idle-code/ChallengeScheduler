@@ -119,7 +119,7 @@ class ChallengeEdit(TemplateView):
             form = ChallengeForm(instance=challenge)
         else:
             form = ChallengeForm()
-        return self.render_to_response({"form": form})
+        return self.render_to_response({"challenge_form": form})
 
     def post(self, request: HttpRequest, *args, challenge_id=None, **kwargs):
         del args, kwargs
@@ -137,7 +137,7 @@ class ChallengeEdit(TemplateView):
                 new_challenge.symbol = new_challenge.name.strip()[0].upper()
             new_challenge.owner = request.user
             new_challenge.save()
-        return self.render_to_response({"form": form})
+        return self.render_to_response({"challenge_form": form})
 
 
 class ChallengeReadOnly(TemplateView):

@@ -3,6 +3,11 @@
 <div>
     <h1>{{ challenge.name }} ({{ challenge.symbol }})</h1>
 
+    {% if challenge.is_active %}
+    <h2>Is active</h2>
+    {% endif %}
+
+
     <h2>Description</h2>
     <p>{{ challenge.description }}</p>
 

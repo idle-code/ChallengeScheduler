@@ -11,12 +11,20 @@ from django.forms import TextInput
 from .models import Challenge
 
 
-class LoginForm(Form):
+class BootstrapForm(Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field_widget_class = field.widget.attrs.get("class", "")
+            field.widget.attrs.update({"class": field_widget_class + " form-control"})
+
+
+class LoginForm(BootstrapForm):
     username = CharField()
     password = CharField(widget=PasswordInput)
 
 
-class RegisterForm(ModelForm):
+class RegisterForm(ModelForm, BootstrapForm):
     email = EmailField()
     password = CharField(widget=PasswordInput)
 
@@ -25,7 +33,7 @@ class RegisterForm(ModelForm):
         fields = ["email", "username", "password"]
 
 
-class AccountSettingsForm(ModelForm):
+class AccountSettingsForm(ModelForm, BootstrapForm):
     email = EmailField()
     password = CharField(widget=PasswordInput)
     password_retype = CharField(widget=PasswordInput)
@@ -44,7 +52,7 @@ class AccountSettingsForm(ModelForm):
         fields = ["email", "password", "password_retype"]
 
 
-class ChallengeForm(ModelForm):
+class ChallengeForm(ModelForm, BootstrapForm):
     # TODO: user datepicker in data range mode
     start = DateField(widget=TextInput(attrs={"data-provide": "datepicker", "class": "datainput"}))
     deadline = DateField(
