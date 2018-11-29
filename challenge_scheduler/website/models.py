@@ -44,7 +44,7 @@ class Challenge(models.Model):
         progress_entries = {}
         created_entries: List[ProgressEntry] = list(self.progress_entries.all())
         edited_entries: Dict[Date, ProgressEntry] = dict(
-            map(lambda e: tuple(e.entry_date, e), created_entries)
+            map(lambda e: tuple((e.entry_date, e)), created_entries)
         )
         for entry_date in date_range(self.start, self.deadline):
             if entry_date in edited_entries:

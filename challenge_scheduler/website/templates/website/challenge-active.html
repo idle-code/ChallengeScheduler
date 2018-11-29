@@ -71,21 +71,26 @@
             </ul>
         </fieldset>
 
-        <h2>Progress</h2>
+        <h2>Progress log</h2>
         <ul>
         {% for date, entry in challenge.all_progress_entries.items %}
-            {% if entry %}
-            <li>{{ date }}: {{ progress_entry.name }}</li>
+            {% if forloop.last %}
+            <li>
+                <fieldset id="progress-fieldset">
+                    <label for="{{ progress_entry_form.description.id_for_label }}">{{ date }}:</label>
+                    {{ progress_entry_form.description }}
+                </fieldset>
+            </li>
             {% else %}
-            <li>{{ date }}: ----</li>
+                {% if entry %}
+                <li>{{ date }}: {{ entry.description }}</li>
+                {% else %}
+                <li>{{ date }}: ----</li>
+                {% endif %}
             {% endif %}
+
         {% endfor %}
         </ul>
-
-        <h2>Progress entries:</h2>
-        <fieldset id="progress-fieldset">
-
-        </fieldset>
 
         <div class="form-actions">
         <div class="btn-group">

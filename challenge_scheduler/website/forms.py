@@ -12,6 +12,7 @@ from django.forms import TextInput
 
 from .models import Challenge
 from .models import Milestone
+from .models import ProgressEntry
 
 
 class BootstrapForm(Form):
@@ -94,8 +95,12 @@ class ChallengeEditForm(ModelForm, BootstrapForm):
 
 
 class ChallengeActiveForm(ModelForm, BootstrapForm):
-    progress_entries = None
-
     class Meta:
         model = Challenge
         fields = ["todo"]
+
+
+class ProgressEntryActiveForm(ModelForm, BootstrapForm):
+    class Meta:
+        model = ProgressEntry
+        fields = ["description"]

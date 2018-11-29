@@ -18,8 +18,10 @@ from .forms import ChallengeEditForm
 from .forms import LoginForm
 from .forms import MilestoneActiveFormSet
 from .forms import MilestoneEditFormSet
+from .forms import ProgressEntryActiveForm
 from .forms import RegisterForm
 from .models import Challenge
+from .models import ProgressEntry
 
 
 class DummyView(TemplateView):
@@ -202,26 +204,51 @@ class ChallengeActive(TemplateView):
         else:
             challenge_form = ChallengeActiveForm()
             milestones_formset = MilestoneActiveFormSet()
+
+        today = timezone.now().date()
+        todays_entry = challenge.progress_entries.filter(entry_date=today).first()
+        if todays_entry:
+            progress_entry = todays_entry
+        else:
+            progress_entry = ProgressEntry(entry_date=today, challenge=challenge)
+        progress_entry_form = ProgressEntryActiveForm(instance=progress_entry)
+
         return self.render_to_response(
-            {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+            {
+                "challenge_form": challenge_form,
+                "milestones_formset": milestones_formset,
+                "progress_entry_form": progress_entry_form,
+            }
         )
 
     def post(self, request: HttpRequest, *args, challenge_id=None, **kwargs):
         del args, kwargs
 
-        if challenge_id:
-            challenge = Challenge.objects.get(pk=challenge_id)
-            challenge_form = ChallengeActiveForm(request.POST, instance=challenge)
-            milestones_formset = MilestoneActiveFormSet(
-                request.POST, queryset=challenge.milestones.all(), prefix="milestone"
-            )
-        else:
-            challenge_form = ChallengeActiveForm(request.POST)
-            milestones_formset = MilestoneActiveFormSet(request.POST)
+        challenge = Challenge.objects.get(pk=challenge_id)
+        challenge_form = ChallengeActiveForm(request.POST, instance=challenge)
+        milestones_formset = MilestoneActiveFormSet(
+            request.POST, queryset=challenge.milestones.all(), prefix="milestone"
+        )
 
-        if not challenge_form.is_valid() or not milestones_formset.is_valid():
+        today = timezone.now().date()
+        todays_entry = challenge.progress_entries.filter(entry_date=today).first()
+        if todays_entry:
+            progress_entry = todays_entry
+        else:
+            progress_entry = ProgressEntry(entry_date=today, challenge=challenge)
+        progress_entry_form = ProgressEntryActiveForm(request.POST, instance=progress_entry)
+
+        if (
+            not challenge_form.is_valid()
+            or not milestones_formset.is_valid()
+            or not progress_entry_form.is_valid()
+        ):
             return self.render_to_response(
-                {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+                {
+                    "challenge_form": challenge_form,
+                    "milestones_formset": milestones_formset,
+                    "progress_entry_form": progress_entry_form,
+                }
             )
 
         new_challenge = challenge_form.save(commit=False)
@@ -241,8 +268,14 @@ class ChallengeActive(TemplateView):
             print(f"Milestone marked as complete on: {milestone.fulfilled_on}")
             milestone.save()
 
+        progress_entry_form.save()
+
         return self.render_to_response(
-            {"challenge_form": challenge_form, "milestones_formset": milestones_formset}
+            {
+                "challenge_form": challenge_form,
+                "milestones_formset": milestones_formset,
+                "progress_entry_form": progress_entry_form,
+            }
         )
 
 
