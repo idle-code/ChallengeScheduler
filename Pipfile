@@ -5,11 +5,12 @@ name = "pypi"
 
 [packages]
 django = "*"
-pre-commit = "*"
-pylint = "*"
-prospector = "*"
 
 [dev-packages]
+pre-commit = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
